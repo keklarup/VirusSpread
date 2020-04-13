@@ -48,7 +48,7 @@ print("""Model parameters...""")
 print('capacityThreshold (default .05) fraction of hosp. agents before mortality goes up')
 answer = input()
 if answer == '':
-    capacityThresh = 0.05
+    capacityThresh = 0.05 * N
 else:
     capacityThresh = float(answer)*N
 print('dist (default 0.0) movement reduction fraction')
