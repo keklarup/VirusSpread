@@ -77,6 +77,7 @@ def agentStatusPlot(agent_status, steps, cmap=None, hospitalThreshold = None,
     ax2.plot(walkingSick, color='orange', label='walking sick')
     ax2.plot(hospital, color='red', label='hospitalized')
     if hospitalThreshold:
+        print(hospitalThreshold)
         ax2.axhline(y=hospitalThreshold, 
                 linestyle='--',color='gray', label='capacity')
     ax2.set_ylabel('Number of sick');

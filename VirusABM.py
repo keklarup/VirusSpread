@@ -151,7 +151,14 @@ class Person(Agent):
         if sum([a.inHospital for a in self.model.schedule.agents]) \
                 > self.model.num_agents*self.model.capacityThresh:
             self.capacityOverload = 1
-            self.movementReduction = 1
         else:
             self.capacityOverload = 0
-            self.movementReduction = 0
+#         if dynamicSD:
+#         if sum([a.inHospital for a in self.model.schedule.agents]) \
+#                 > self.model.num_agents*self.model.capacityThresh:
+#             self.movementReduction = .7
+#         else:
+#             self.movementReduction = 0
+            
+            
+            
