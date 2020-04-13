@@ -1,0 +1,6 @@
+#basic requirements.txt file for virus spread ABM project.
+
+numpy
+matplotlib
+imageio
+mesa
