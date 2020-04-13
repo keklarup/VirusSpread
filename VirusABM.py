@@ -8,6 +8,7 @@ Created on Thu Apr  9 10:04:11 2020
 
 from mesa import Agent, Model
 from mesa.time import RandomActivation
+from mesa.datacollection import DataCollector
 from mesa.space import MultiGrid
 import numpy as np
 
@@ -42,15 +43,20 @@ class VirusModel(Model):
             y = self.random.randrange(self.grid.height)
             self.grid.place_agent(a, (x, y))
 
+        self.datacollector = DataCollector(
+            #record agent status each timestep
+            agent_reporters={"type": "type"})
+
     def step(self):
+        self.datacollector.collect(self)
         self.schedule.step()
-        
 
 class Person(Agent):
     """ Agent in the model,
         with various attributes like sickness and movement"""
     
     Agent.capacityOverload=0
+    Agent.movementReduction = 0
     
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
@@ -74,7 +80,9 @@ class Person(Agent):
         
     def move(self):
         """Agent movement function. Don't move if dead"""
-        if self.dead==0 and self.distance < np.random.random():
+        #change from agent based movement to env based movement
+        #if self.dead==0 and  self.distance < np.random.random():
+        if self.dead == 0 and np.random.random()>self.movementReduction:
             possible_steps = self.model.grid.get_neighborhood(
                 self.pos,
                 moore=True,
@@ -143,5 +151,7 @@ class Person(Agent):
         if sum([a.inHospital for a in self.model.schedule.agents]) \
                 > self.model.num_agents*self.model.capacityThresh:
             self.capacityOverload = 1
+            self.movementReduction = 1
         else:
             self.capacityOverload = 0
+            self.movementReduction = 0

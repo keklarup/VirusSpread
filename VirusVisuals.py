@@ -9,7 +9,9 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 import numpy as np
 import os
-
+import tempfile
+from datetime import datetime
+import imageio
 
 def agentPlot(storageArrayList, cmap=None, save=False, saveFolder=None, 
               display=False, i=0):
@@ -35,7 +37,7 @@ def agentPlot(storageArrayList, cmap=None, save=False, saveFolder=None,
     #plt.close()
     return plt
     
-def agentStatusPlot(storageArrayList, steps, cmap=None, hospitalThreshold = None,
+def agentStatusPlot(agent_status, steps, cmap=None, hospitalThreshold = None,
                     save=False, saveFolder=None, 
                     display=False, i=0):
     """Generates various high level visuals of the progression of the
@@ -44,13 +46,13 @@ def agentStatusPlot(storageArrayList, steps, cmap=None, hospitalThreshold = None
     if cmap ==None:
         cmap = colors.ListedColormap(['white','lightblue','lightgreen', 
                                       'blue', 'orange','red', 'black'])
-    
-    healthy=np.count_nonzero(np.array(storageArrayList[:i])==0, axis=1).sum(axis=1)
-    recovered=np.count_nonzero(np.array(storageArrayList[:i])==1, axis=1).sum(axis=1)
-    vaccinated=np.count_nonzero(np.array(storageArrayList[:i])==2, axis=1).sum(axis=1)
-    walkingSick=np.count_nonzero(np.array(storageArrayList[:i])==3, axis=1).sum(axis=1)
-    hospital=np.count_nonzero(np.array(storageArrayList[:i])==4, axis=1).sum(axis=1)
-    dead=np.count_nonzero(np.array(storageArrayList[:i])==5, axis=1).sum(axis=1)
+    i=steps
+    healthy=np.count_nonzero(agent_status.unstack().to_numpy() == 0,axis=1)[:i]
+    recovered=np.count_nonzero(agent_status.unstack().to_numpy() == 1,axis=1)[:i]
+    vaccinated=np.count_nonzero(agent_status.unstack().to_numpy() == 2,axis=1)[:i]
+    walkingSick=np.count_nonzero(agent_status.unstack().to_numpy() == 3,axis=1)[:i]
+    hospital=np.count_nonzero(agent_status.unstack().to_numpy() == 4,axis=1)[:i]
+    dead=np.count_nonzero(agent_status.unstack().to_numpy() == 5,axis=1)[:i]
 
     fig, (ax1, ax2, ax3) = plt.subplots(3, sharex=True, figsize=[12,8])
     ax1.bar(range(len(healthy)), dead, width=1.0, color='black', label='dead')
@@ -94,21 +96,21 @@ def agentStatusPlot(storageArrayList, steps, cmap=None, hospitalThreshold = None
     #plt.close()
     return fig
 
-def combinedVisuals(SAL, steps, cmap=None, i=0, hospitalThreshold = None,
+def combinedVisuals(SAL, agent_status, cmap=None, i=0, 
+                    hospitalThreshold = None,
                     modelName='Model visualization', 
                     save=False, saveFolder=None, display=False):
     """Combines a few different visuals into a single large image."""
     if not cmap:
         cmap = colors.ListedColormap(['white','lightblue','lightgreen', 
                                       'blue', 'orange','red', 'black'])
-    
     storedArray=SAL[i]
-    healthy=np.count_nonzero(np.array(SAL[:i])==0, axis=1).sum(axis=1)
-    recovered=np.count_nonzero(np.array(SAL[:i])==1, axis=1).sum(axis=1)
-    vaccinated=np.count_nonzero(np.array(SAL[:i])==2, axis=1).sum(axis=1)
-    walkingSick=np.count_nonzero(np.array(SAL[:i])==3, axis=1).sum(axis=1)
-    hospital=np.count_nonzero(np.array(SAL[:i])==4, axis=1).sum(axis=1)
-    dead=np.count_nonzero(np.array(SAL[:i])==5, axis=1).sum(axis=1)
+    healthy=np.count_nonzero(agent_status.unstack().to_numpy() == 0,axis=1)[:i]
+    recovered=np.count_nonzero(agent_status.unstack().to_numpy() == 1,axis=1)[:i]
+    vaccinated=np.count_nonzero(agent_status.unstack().to_numpy() == 2,axis=1)[:i]
+    walkingSick=np.count_nonzero(agent_status.unstack().to_numpy() == 3,axis=1)[:i]
+    hospital=np.count_nonzero(agent_status.unstack().to_numpy() == 4,axis=1)[:i]
+    dead=np.count_nonzero(agent_status.unstack().to_numpy() == 5,axis=1)[:i]
 
     fig = plt.figure(figsize=[16,8])
     gs = fig.add_gridspec(3, 5)
@@ -157,3 +159,31 @@ def combinedVisuals(SAL, steps, cmap=None, i=0, hospitalThreshold = None,
     if display == True:
         plt.show()
     plt.close()
+
+def generateGIF(SAL, agent_status, NumSteps, cmap=None, stepSkip=2, 
+                saveFolder=os.getcwd(),modelName='ABM Simulation', 
+                GIFname='ABM_sim', datestamp=True, fps = 10,
+                hospitalThreshold = None):
+    if not cmap:
+        cmap = colors.ListedColormap(['white','lightblue','lightgreen', 
+                                      'blue', 'orange','red', 'black'])
+    print("Starting to generate frames for GIF...")
+    with tempfile.TemporaryDirectory(dir=os.getcwd()) as f:
+        for i in range(1, len(SAL)):
+            if i%stepSkip == 0: #saving only every stepSkip frame for the GIF
+                combinedVisuals(SAL, agent_status, cmap,i=i, 
+                                hospitalThreshold = hospitalThreshold,
+                                modelName=modelName.strip()+' ',
+                                save=True, saveFolder=f, display=False)
+        print("frames generated. Making GIF...")
+        if datestamp:
+            date = datetime.today().date().strftime('%y%m%d')
+        images = []
+        fileNums = [int(elm.split('_')[1].split('.png')[0]) for elm in os.listdir(f) if '.png' in elm]
+        fileNums = sorted(fileNums)
+        for num in fileNums:
+            file_name = 'step_%s.png'%(num)
+            file_path = os.path.join(f, file_name)
+            images.append(imageio.imread(file_path))
+        imageio.mimsave(os.path.join(saveFolder,'%s_%s.gif'%(GIFname, date)),images,fps=fps)
+        print("GIF complete!")
