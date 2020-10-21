@@ -19,7 +19,7 @@ Above simulation of disease spread through a community of 1,200 agents in a simp
 * The word in which the Agents reside
 * In all this work, environment is a simple, 2D grid.
 
-(single agent)[https://github.com/keklarup/VirusSpread/blob/master/Visuals/SingleAgent_200914.gif]
+![single agent](https://github.com/keklarup/VirusSpread/blob/master/Visuals/SingleAgent_200914.gif)
 
 Above: Single agent moving in simple, 2d grid environment. Agent progresses through different disease states (color coded) which impact mobility in environment
 ----
@@ -30,7 +30,7 @@ Above: Single agent moving in simple, 2d grid environment. Agent progresses thro
    * Move to 1 of 9 neighboring locations
    * If sick and moved to same location as another agent, pass the illness with some probability 
    * If sick for long enough become hospitalized, recover and/or die
-(example timesteps)[https://github.com/keklarup/VirusSpread/blob/master/Visuals/TimestepsExample.png]
+![example timesteps](https://github.com/keklarup/VirusSpread/blob/master/Visuals/TimestepsExample.png)
 
 Above: 4 timesteps of a small ABM with 5 agents on a 5x5 grid, showing the infection of a second agent.
 
@@ -59,9 +59,9 @@ Possible Agent disease states:
 * With so many knobs to turn, first challenge is creating a <b>realistic simulation</b>.
 * Good rule of thumb: find model parameters which replicate current measurables before trying to develop insight into how to change measurables 
 
-[10](https://github.com/keklarup/VirusSpread/blob/master/Visuals/10Agents.gif)
-[100](https://github.com/keklarup/VirusSpread/blob/master/Visuals/100Agents.gif)
-[500](https://github.com/keklarup/VirusSpread/blob/master/Visuals/500Agents.gif)
+![10](https://github.com/keklarup/VirusSpread/blob/master/Visuals/10Agents.gif) 
+![100](https://github.com/keklarup/VirusSpread/blob/master/Visuals/100Agents.gif)
+![500](https://github.com/keklarup/VirusSpread/blob/master/Visuals/500Agents.gif)
 
 Above: all parameters held constant except for number of agents, which greatly impacts outcome
 
@@ -86,7 +86,8 @@ Possible parameters:
 #### Results in: Rnot around 3.2
 (Measured by average number of Agents infected by patient 0 after running simulation 300 times)
 ----
-((insert visual))
+![R3.2](https://github.com/keklarup/VirusSpread/blob/master/Visuals/movementRed0.0_stats-optimize.gif)
+
 Above: ABM simulation that produces realistic Rnot values, hospitalization rates, death rates, etc.
 ----
 ### Changing Parameters
