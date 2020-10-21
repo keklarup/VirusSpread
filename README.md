@@ -220,7 +220,7 @@ Gain insight into best mix of control options for best outcome
 * SpaDES or RnetLogo (R)
 * Mesa (Python)
 
-((insert visual))
+![netLogo](https://github.com/keklarup/VirusSpread/blob/master/Visuals/NetLogoExamples.png)
 
 
 
